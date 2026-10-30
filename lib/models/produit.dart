@@ -1,37 +1,55 @@
 
-import 'package:flutter/material.dart';
+class Produit {
+  final int? id;
+  final String nom;
+  final double prix;
+  final int quantite;
+  final bool disponible;
+  final DateTime dateAjout;
+  final int categorieId;
 
-void main() {
-  runApp(const StockFacileApp());
-}
+  const Produit({
+    this.id,
+    required this.nom,
+    required this.prix,
+    this.quantite = 0,
+    this.disponible = true,
+    required this.dateAjout,
+    required this.categorieId,
+  });
 
-class StockFacileApp extends StatelessWidget {
-  const StockFacileApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'StockFacile',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-        ),
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('StockFacile'),
-          backgroundColor: Colors.teal,
-          foregroundColor: Colors.white,
-        ),
-        body: const Center(
-          child: Text(
-            'Bienvenue dans StockFacile',
-            style: TextStyle(fontSize: 20),
-          ),
-        ),
-      ),
+  // Ligne SQLite (Map) → objet Dart
+  factory Produit.fromMap(Map<String, dynamic> map) {
+    return Produit(
+      id: map['id'] as int?,
+      nom: map['nom'] as String,
+      prix: (map['prix'] as num).toDouble(),
+      quantite: map['quantite'] as int,
+      disponible: map['disponible'] == 1,
+      dateAjout: DateTime.parse(map['date_ajout'] as String),
+      categorieId: map['categorie_id'] as int,
     );
   }
+
+  // Objet Dart → ligne SQLite (Map)
+  Map<String, dynamic> toMap() {
+    return {
+      if (id != null) 'id': id,
+      'nom': nom,
+      'prix': prix,
+      'quantite': quantite,
+      'disponible': disponible ? 1 : 0,
+      'date_ajout': dateAjout.toIso8601String(),
+      'categorie_id': categorieId,
+    };
+  }
+
+  // Affichage des informations du produit
+  @override
+  String toString() {
+    return 'Produit(id: $id, nom: $nom, prix: $prix, '
+        'quantite: $quantite, disponible: $disponible, '
+        'dateAjout: $dateAjout, categorieId: $categorieId)';
+  }
 }
+
